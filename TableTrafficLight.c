@@ -58,29 +58,31 @@ typedef const struct State STyp;
 #define noWalk 13
 
 STyp FSM[14]={
-	{0x4C, 150, {goS, goS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS}},
-	{0x54, 150, {waitS, waitS, waitS, waitS, waitS, waitS, waitS, waitS}},
-	{0x64, 150, {goW, goW, goW, goW, walk, walk, goW, goW}},
-	{0x61, 150, {goW, slowW, goW, slowW, slowW, slowW, slowW, slowW}},
-	{0x62, 150, {waitW, waitW, waitW, waitW, waitW, waitW, waitW, waitW, }},
-	{0x64, 150, {walk, goS, walk, goS, walk, walk, walk, walk,}},
-	{0xA4, 150, {walk, flashOn1, flashOn1, flashOn1, walk, flashOn1, flashOn1, flashOn1}},
-	{0x64, 150, {flashOff1, flashOff1, flashOff1, flashOff1, flashOff1, flashOff1, flashOff1, flashOff1}},
-	{0x24, 150, {flashOn2, flashOn2, flashOn2, flashOn2, flashOn2, flashOn2, flashOn2, flashOn2}},
-	{0x64, 150, {flashOff2, flashOff2, flashOff2, flashOff2, flashOff2, flashOff2, flashOff2, flashOff2, }},
-	{0x24, 150, {flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3}},
-	{0x64, 150, {flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, }},
-	{0x24, 150, {noWalk, noWalk, noWalk, noWalk, noWalk, noWalk, noWalk, noWalk}},
-	{0x64, 150, {goS, goS, goW, goS, goS, goS, goW, goS}}
+	{0x4C, 36, {goS, goS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS}},
+	{0x54, 36, {waitS, waitS, waitS, waitS, waitS, waitS, waitS, waitS}},
+	{0x64, 36, {goW, goW, goW, goW, walk, walk, goW, goW}},
+	{0x61, 36, {goW, slowW, goW, slowW, slowW, slowW, slowW, slowW}},
+	{0x62, 36, {waitW, waitW, waitW, waitW, waitW, waitW, waitW, waitW, }},
+	{0x64, 36, {walk, goS, walk, goS, walk, walk, walk, walk,}},
+	{0xA4, 36, {walk, flashOn1, flashOn1, flashOn1, walk, flashOn1, flashOn1, flashOn1}},
+	{0x64, 18, {flashOff1, flashOff1, flashOff1, flashOff1, flashOff1, flashOff1, flashOff1, flashOff1}},
+	{0x24, 18, {flashOn2, flashOn2, flashOn2, flashOn2, flashOn2, flashOn2, flashOn2, flashOn2}},
+	{0x64, 18, {flashOff2, flashOff2, flashOff2, flashOff2, flashOff2, flashOff2, flashOff2, flashOff2, }},
+	{0x24, 18, {flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3}},
+	{0x64, 18, {flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, }},
+	{0x24, 36, {noWalk, noWalk, noWalk, noWalk, noWalk, noWalk, noWalk, noWalk}},
+	{0x64, 36, {goS, goS, goW, goS, goS, goS, goW, goS}}
 
 };
 unsigned long S;
 unsigned long Input;
 unsigned long lightData;
+unsigned long lightData2;
+
 void EnableInterrupts(void);
 void PortInit(void){ volatile unsigned long delay;
-	SYSCTL_RCGCGPIO_R |= 0x0000001F;  // 1) activate clock for Port A,E,F
-  delay = SYSCTL_RCGCGPIO_R;        // allow time for clock to start
+	//SYSCTL_RCGCGPIO_R |= 0x00000031;  // 1) activate clock for Port A,E,F
+  //delay = SYSCTL_RCGCGPIO_R;        // allow time for clock to start
 	SYSCTL_RCGC2_R |= 0x31;
 	delay = SYSCTL_RCGC2_R;
   GPIO_PORTF_LOCK_R = 0x4C4F434B;   // 2) unlock GPIO Port F
@@ -114,6 +116,12 @@ int main(void){
 		GPIO_PORTE_DATA_R= FSM[S].Out&0x3F;
 		lightData=FSM[S].Out&0xE0;
 		lightData= lightData >>5;
+		lightData2= lightData&0x04;
+		lightData2=lightData2<<1;
+		lightData|= lightData2;
+		lightData2= lightData&0x04;
+		lightData2=lightData2>>1;
+		lightData|= lightData2;		
 		GPIO_PORTF_DATA_R= lightData;
 		SysTick_Wait10ms(FSM[S].Time);
 		Input= GPIO_PORTA_DATA_R&0x1C;

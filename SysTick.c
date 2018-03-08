@@ -30,6 +30,6 @@ void SysTick_Wait10ms(uint32_t delay){
 // you write this as part of Lab 5
   uint32_t i;
   for(i=0; i<delay; i++){
-    SysTick_Wait(80000);  // wait 10ms
+    SysTick_Wait(800000);  // wait 10ms
 }
 }
