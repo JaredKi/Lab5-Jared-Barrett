@@ -40,7 +40,7 @@
 	struct State{
 unsigned long Out;
 unsigned long Time;
-unsigned long Next[14];};
+unsigned long Next[16];};
 typedef const struct State STyp;
 #define goS 0
 #define slowS 1
@@ -56,9 +56,11 @@ typedef const struct State STyp;
 #define flashOn3 11
 #define flashOff3 12
 #define noWalk 13
+#define slowSW 14
+#define waitSW 15
 
-STyp FSM[14]={
-	{0x4C, 36, {goS, goS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS}},
+STyp FSM[16]={
+	{0x4C, 36, {goS, goS, slowS, slowS, slowSW, slowSW, slowS, slowS, slowS, slowS, slowS, slowS, slowS, slowS}},
 	{0x54, 36, {waitS, waitS, waitS, waitS, waitS, waitS, waitS, waitS}},
 	{0x64, 36, {goW, goW, goW, goW, walk, walk, goW, goW}},
 	{0x61, 36, {goW, slowW, goW, slowW, slowW, slowW, slowW, slowW}},
@@ -71,7 +73,9 @@ STyp FSM[14]={
 	{0x24, 18, {flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3, flashOn3}},
 	{0x64, 18, {flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, flashOff3, }},
 	{0x24, 36, {noWalk, noWalk, noWalk, noWalk, noWalk, noWalk, noWalk, noWalk}},
-	{0x64, 36, {goS, goS, goW, goS, goS, goS, goW, goS}}
+	{0x64, 36, {goS, goS, goW, goS, goS, goS, goW, goS}},
+	{0x54, 36, {waitSW, waitSW, waitSW, waitSW, waitSW, waitSW, waitSW, waitSW}},
+	{0x64, 36, {walk, walk, walk, walk, walk, walk, walk, walk}},
 
 };
 unsigned long S;
